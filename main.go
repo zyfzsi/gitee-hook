@@ -8,23 +8,23 @@ import (
 	"os/exec"
 )
 
-type result struct{
+type result struct {
 	gitlabPassword string
-	shPath string
-	shName string
-	port string
+	shPath         string
+	shName         string
+	port           string
 }
 
-func initcfg()  result {
+func initcfg() result {
 	cfg, err := goconfig.LoadConfigFile("./cfg.ini")
 	if err != nil {
 		fmt.Printf("无法加载配置文件：%s\n", err)
 	}
-	gitlabPassword,_:= cfg.GetValue("", "gitlab_password")
-	shPath,_:= cfg.GetValue("", "sh_path")
-	shName,_:= cfg.GetValue("", "sh_name")
-	port,_:= cfg.GetValue("", "port")
-	if gitlabPassword == "" || shPath== "" || shName == ""{
+	gitlabPassword, _ := cfg.GetValue("", "gitlab_password")
+	shPath, _ := cfg.GetValue("", "sh_path")
+	shName, _ := cfg.GetValue("", "sh_name")
+	port, _ := cfg.GetValue("", "port")
+	if gitlabPassword == "" || shPath == "" || shName == "" {
 
 	}
 	rs := result{gitlabPassword, shPath, shName, port}
@@ -33,9 +33,10 @@ func initcfg()  result {
 
 func main() {
 	config := initcfg()
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.POST("/gitlabapi", func(context *gin.Context) {
-		context.Request.ParseMultipartForm(128)//保存表单缓存的内存大小128M
+		context.Request.ParseMultipartForm(128) //保存表单缓存的内存大小128M
 		header := context.GetHeader("X-Gitee-Token:")
 		if header != config.gitlabPassword {
 			fmt.Println("Password Dont Match")
